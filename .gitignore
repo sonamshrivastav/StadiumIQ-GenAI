@@ -1,0 +1,25 @@
+# Environments
+.env
+.env.*
+.env.local
+
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Node & Build artifacts
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+.cache/
+
+# Databases & logs
+sqlite_chat_history.db
+*.log
+
+# Editor folders
+.vscode/
+.idea/
+.DS_Store
