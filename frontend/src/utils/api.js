@@ -3,7 +3,7 @@
  * Communicates with the FastAPI backend
  */
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export async function sendChatMessage(message, stadiumId = 'metlife', language = 'en', sessionId = null) {
   const response = await fetch(`${API_BASE}/api/chat`, {
@@ -53,7 +53,9 @@ export async function getMatches(stadiumId = null) {
 }
 
 export function createWebSocket(stadiumId = 'metlife') {
-  return new WebSocket(`ws://localhost:8000/ws/live`);
+  const wsProtocol = API_BASE.startsWith('https') ? 'wss' : 'ws';
+  const cleanBase = API_BASE.replace(/^https?:\/\//, '');
+  return new WebSocket(`${wsProtocol}://${cleanBase}/ws/live`);
 }
 
 export async function getFacilitySearch(stadiumId, facilityType) {
