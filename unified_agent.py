@@ -15,7 +15,8 @@ try:
 except Exception:
     pass
 
-load_dotenv("C:/Users/sonam/FIFA/.env")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 from google import genai
 from google.genai import types
@@ -143,7 +144,7 @@ TOOL_AGENT_MAP = {
 # PERSISTENT SQLITE CHAT HISTORY MANAGER
 # ──────────────────────────────────────────────
 
-DB_PATH = "C:/Users/sonam/FIFA/sqlite_chat_history.db"
+DB_PATH = os.path.join(BASE_DIR, "sqlite_chat_history.db")
 
 class SQLiteChatHistoryManager:
     """Thread-safe SQLite persistent store for conversational context."""
