@@ -263,6 +263,8 @@ async def websocket_live(websocket: WebSocket):
 # HEALTH CHECK
 # ──────────────────────────────────────────────
 
+@app.get("/")
+@app.get("/healthz")
 @app.get("/api/health")
 async def health():
     return {"status": "ok", "service": "StadiumIQ API", "version": "1.0.0"}
