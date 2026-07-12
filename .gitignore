@@ -2,17 +2,20 @@
 .env
 .env.*
 .env.local
+!.env.example
 
 # Python caches
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+.pytest_cache/
 
 # Node & Build artifacts
 frontend/node_modules/
 frontend/dist/
 frontend/build/
+node_modules/
 .cache/
 
 # Databases & logs

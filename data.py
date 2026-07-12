@@ -4,7 +4,7 @@ All 16 venues, match schedule, facilities, and simulated real-time data.
 """
 
 import random
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 # ──────────────────────────────────────────────
 # STADIUMS — All 16 FIFA World Cup 2026 Venues
@@ -439,7 +439,7 @@ def get_crowd_data(stadium_id: str) -> dict:
         "total_inside": total_in,
         "occupancy_pct": round((total_in / stadium["capacity"]) * 100, 1),
         "zones": zone_data,
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "alerts": _generate_alerts(zone_data),
     }
 
@@ -513,7 +513,7 @@ def _seed_incidents():
                         "description": desc,
                         "location": loc,
                         "status": status,
-                        "reported_at": event.get("telemetry_snapshot", {}).get("timestamp") or datetime.utcnow().isoformat(),
+                        "reported_at": event.get("telemetry_snapshot", {}).get("timestamp") or datetime.now(timezone.utc).isoformat(),
                         "eta_minutes": event.get("wait_time_estimate", 5),
                         "assigned_to": assigned,
                     }
@@ -535,7 +535,7 @@ def report_new_incident(stadium_id: str, description: str, location: str) -> dic
         "description": description,
         "location": location,
         "status": "reported",
-        "reported_at": datetime.utcnow().isoformat(),
+        "reported_at": datetime.now(timezone.utc).isoformat(),
         "eta_minutes": random.randint(2, 8),
         "assigned_to": random.choice(["Team Alpha", "Team Bravo", "Team Charlie", "Maintenance Unit 4"]),
     }

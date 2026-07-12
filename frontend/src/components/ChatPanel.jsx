@@ -191,33 +191,35 @@ export default function ChatPanel({ stadiumId, language = 'en', onSendMessage })
   };
 
   return (
-    <div className="chat-panel">
+    <section className="chat-panel" aria-label="AI Chat Assistant">
       {/* Header */}
       <div className="chat-panel__header">
         <div className="chat-panel__title">
-          💬 {t.title_ai_assistant}
+          <span aria-hidden="true">💬</span> {t.title_ai_assistant}
         </div>
         <div className="chat-panel__status">
-          <span className="live-dot" style={{ width: 6, height: 6, borderRadius: '50%', background: '#00c853', display: 'inline-block' }}></span>
+          <span className="live-dot" aria-hidden="true" style={{ width: 6, height: 6, borderRadius: '50%', background: '#00c853', display: 'inline-block' }}></span>
           {t.status_online}
         </div>
       </div>
 
       {/* Messages */}
-      <div className="chat-panel__messages">
+      <div className="chat-panel__messages" role="log" aria-live="polite" aria-label="Conversation history" aria-busy={isLoading}>
         {messages.length === 0 ? (
           <div className="welcome-message">
-            <div className="welcome-message__icon">⚽</div>
+            <div className="welcome-message__icon" aria-hidden="true">⚽</div>
             <h2 className="welcome-message__title">{t.title}</h2>
             <p className="welcome-message__subtitle">{t.subtitle}</p>
-            <div className="welcome-message__quick-actions">
+            <div className="welcome-message__quick-actions" role="list" aria-label="Quick action suggestions">
               {t.quick_actions.map((action, i) => (
                 <button
                   key={i}
+                  role="listitem"
                   className="welcome-action"
                   onClick={() => handleSend(action.prompt)}
+                  aria-label={`Ask: ${action.text}`}
                 >
-                  <span className="welcome-action__icon">{action.icon}</span>
+                  <span className="welcome-action__icon" aria-hidden="true">{action.icon}</span>
                   {action.text}
                 </button>
               ))}
@@ -227,7 +229,7 @@ export default function ChatPanel({ stadiumId, language = 'en', onSendMessage })
           <>
             {messages.map((msg, i) => (
               <div key={i} className={`chat-message chat-message--${msg.role}`}>
-                <div className="chat-message__avatar">
+                <div className="chat-message__avatar" aria-hidden="true">
                   {msg.role === 'user' ? '👤' : '🤖'}
                 </div>
                 <div className="chat-message__bubble">
@@ -241,13 +243,13 @@ export default function ChatPanel({ stadiumId, language = 'en', onSendMessage })
               </div>
             ))}
             {isLoading && (
-              <div className="typing-indicator">
-                <div className="chat-message__avatar" style={{
+              <div className="typing-indicator" role="status" aria-label="AI is typing a response">
+                <div className="chat-message__avatar" aria-hidden="true" style={{
                   background: 'linear-gradient(135deg, #f5a623, #ff8c42)',
                   width: 36, height: 36, borderRadius: 12,
                   display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>🤖</div>
-                <div className="typing-indicator__dots">
+                <div className="typing-indicator__dots" aria-hidden="true">
                   <div className="typing-indicator__dot"></div>
                   <div className="typing-indicator__dot"></div>
                   <div className="typing-indicator__dot"></div>
@@ -261,12 +263,14 @@ export default function ChatPanel({ stadiumId, language = 'en', onSendMessage })
 
       {/* Suggestion Chips */}
       {suggestions.length > 0 && (
-        <div className="chat-suggestions">
+        <div className="chat-suggestions" role="list" aria-label="Suggested follow-up questions">
           {suggestions.map((s, i) => (
             <button
               key={i}
+              role="listitem"
               className="chat-suggestion-chip"
               onClick={() => handleSend(s)}
+              aria-label={`Ask: ${s}`}
             >
               {s}
             </button>
@@ -275,7 +279,7 @@ export default function ChatPanel({ stadiumId, language = 'en', onSendMessage })
       )}
 
       {/* Input Area */}
-      <div className="chat-input-area">
+      <div className="chat-input-area" role="form" aria-label="Chat input">
         <div className="chat-input-wrapper">
           <input
             ref={inputRef}
@@ -298,6 +302,6 @@ export default function ChatPanel({ stadiumId, language = 'en', onSendMessage })
           </button>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

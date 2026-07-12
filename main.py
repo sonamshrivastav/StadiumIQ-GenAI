@@ -1,17 +1,25 @@
 """
 StadiumIQ — FastAPI Backend
 FIFA World Cup 2026 GenAI Stadium Command Center
+
+Production-grade backend with security headers, CORS policy,
+rate limiting, input validation, and multi-provider AI cascade.
 """
 
 import os
 import json
+import time
 import asyncio
+import logging
+from collections import defaultdict
 from dotenv import load_dotenv
 
 load_dotenv()
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
 from schema import (
     ChatRequest, ChatResponse, CompanionRequest, IncidentRequest,
     TaskRequest, CarbonRequest, TravelTimeRequest
@@ -27,6 +35,64 @@ from tools import (
 from unified_agent import run_chat_query
 
 # ──────────────────────────────────────────────
+# LOGGING
+# ──────────────────────────────────────────────
+
+logger = logging.getLogger("stadiumiq")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)s: %(message)s")
+
+
+# ──────────────────────────────────────────────
+# SECURITY HEADERS MIDDLEWARE
+# ──────────────────────────────────────────────
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """Injects standard HTTP security headers on every response."""
+
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=()"
+        response.headers["Cache-Control"] = "no-store"
+        return response
+
+
+# ──────────────────────────────────────────────
+# RATE LIMITING MIDDLEWARE
+# ──────────────────────────────────────────────
+
+class RateLimitMiddleware(BaseHTTPMiddleware):
+    """Simple in-memory rate limiter for the /api/chat endpoint."""
+
+    def __init__(self, app, max_requests: int = 30, window_seconds: int = 60):
+        super().__init__(app)
+        self.max_requests = max_requests
+        self.window_seconds = window_seconds
+        self.requests: dict[str, list[float]] = defaultdict(list)
+
+    async def dispatch(self, request: Request, call_next):
+        if request.url.path == "/api/chat" and request.method == "POST":
+            client_ip = request.client.host if request.client else "unknown"
+            now = time.time()
+            # Clean old entries
+            self.requests[client_ip] = [
+                t for t in self.requests[client_ip]
+                if now - t < self.window_seconds
+            ]
+            if len(self.requests[client_ip]) >= self.max_requests:
+                logger.warning(f"Rate limit exceeded for IP: {client_ip}")
+                return JSONResponse(
+                    status_code=429,
+                    content={"detail": "Too many requests. Please try again later."}
+                )
+            self.requests[client_ip].append(now)
+        return await call_next(request)
+
+
+# ──────────────────────────────────────────────
 # APP SETUP
 # ──────────────────────────────────────────────
 
@@ -36,15 +102,24 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# Allowed CORS origins (production + development)
+ALLOWED_ORIGINS = [
+    "https://frontend-navy-mu-87.vercel.app",
+    "https://frontend-k3b6d7w94-sonam4.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+]
+
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RateLimitMiddleware, max_requests=30, window_seconds=60)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
 )
-
-# App initialization complete
 
 
 # ──────────────────────────────────────────────

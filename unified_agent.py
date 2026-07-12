@@ -319,7 +319,7 @@ def execute_openrouter_generation(messages: list, timeout: float = 10.0) -> str:
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
-        "HTTP-Referer": "http://localhost:8000",
+        "HTTP-Referer": "https://stadiumiq-genai.onrender.com",
         "X-Title": "StadiumIQ"
     }
     model = os.environ.get("OPENROUTER_MODEL", "meta-llama/llama-3.3-70b-instruct")
@@ -425,11 +425,22 @@ def sanitize_user_input(message: str) -> str:
         r"system\s+override",
         r"you\s+must\s+now\s+act\s+as",
         r"bypass\s+restrictions",
-        r"new\s+system\s+prompt"
+        r"new\s+system\s+prompt",
+        r"act\s+as\s+(?:DAN|an?\s+unrestricted)",
+        r"jailbreak",
+        r"disregard\s+(?:all\s+)?(?:your\s+)?instructions",
+        r"pretend\s+you\s+are",
+        r"reveal\s+(?:your\s+)?(?:system\s+)?(?:prompt|instructions)",
+        r"output\s+(?:your\s+)?(?:system\s+)?(?:prompt|instructions)",
+        r"what\s+(?:are|is)\s+your\s+(?:system\s+)?(?:prompt|instructions)",
+        r"repeat\s+(?:your\s+)?(?:system\s+)?(?:prompt|instructions)",
     ]
     
     for pattern in injection_patterns:
         clean = re.sub(pattern, "[REDACTED INJECTION ATTEMPT]", clean, flags=re.IGNORECASE)
+    
+    # Length safety: truncate to 2000 chars
+    clean = clean[:2000]
         
     return clean
 

@@ -95,10 +95,10 @@ export default function Sidebar({ activeView, onViewChange, stadiumId, onStadium
   const t = TRANSLATIONS[language] || TRANSLATIONS.en;
 
   return (
-    <nav className="sidebar" aria-label="Sidebar Navigation">
+    <nav className="sidebar" aria-label="Main navigation">
       {/* Brand */}
       <div className="sidebar__brand">
-        <div className="sidebar__brand-icon">⚽</div>
+        <div className="sidebar__brand-icon" aria-hidden="true">⚽</div>
         <div>
           <div className="sidebar__brand-text">
             Stadium<span>IQ</span>
@@ -118,7 +118,7 @@ export default function Sidebar({ activeView, onViewChange, stadiumId, onStadium
             onClick={() => onViewChange(item.id)}
             aria-current={activeView === item.id ? 'page' : undefined}
           >
-            <span className="sidebar__nav-icon">{item.icon}</span>
+            <span className="sidebar__nav-icon" aria-hidden="true">{item.icon}</span>
             {t[item.id] || item.label}
           </button>
         ))}
@@ -140,10 +140,12 @@ export default function Sidebar({ activeView, onViewChange, stadiumId, onStadium
 
       {/* Stadium Selector */}
       <div className="sidebar__stadium-select">
-        <label>{t.active_stadium}</label>
+        <label htmlFor="stadium-select">{t.active_stadium}</label>
         <select
+          id="stadium-select"
           value={stadiumId}
           onChange={(e) => onStadiumChange(e.target.value)}
+          aria-label="Select active stadium"
         >
           {stadiums.map(s => (
             <option key={s.id} value={s.id}>
@@ -155,10 +157,12 @@ export default function Sidebar({ activeView, onViewChange, stadiumId, onStadium
 
       {/* Language Selector */}
       <div className="sidebar__stadium-select" style={{ marginTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '12px' }}>
-        <label>{t.language_pref}</label>
+        <label htmlFor="language-select">{t.language_pref}</label>
         <select
+          id="language-select"
           value={language}
           onChange={(e) => onLanguageChange(e.target.value)}
+          aria-label="Select language"
         >
           <option value="en">English 🇺🇸</option>
           <option value="es">Español 🇪🇸</option>

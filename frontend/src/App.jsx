@@ -107,7 +107,7 @@ export default function App() {
       <Header stadium={currentStadium} stadiumId={stadiumId} />
 
       {/* Main Content */}
-      <div className="main-content">
+      <main id="main-content" className="main-content" role="main">
         {/* Left: Chat Panel */}
         <ChatPanel stadiumId={stadiumId} language={language} />
 
@@ -119,7 +119,7 @@ export default function App() {
           facilities={stadiumDetails?.facilities}
           matches={matches}
         />
-      </div>
+      </main>
     </div>
   );
 }
