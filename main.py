@@ -330,8 +330,11 @@ async def websocket_live(websocket: WebSocket):
             data = get_crowd_data("metlife")  # Default stadium
             await websocket.send_json({"type": "crowd_update", "data": data})
             await asyncio.sleep(10)
-    except WebSocketDisconnect:
-        connected_clients.remove(websocket)
+    except (WebSocketDisconnect, Exception):
+        pass
+    finally:
+        if websocket in connected_clients:
+            connected_clients.remove(websocket)
 
 
 # ──────────────────────────────────────────────
