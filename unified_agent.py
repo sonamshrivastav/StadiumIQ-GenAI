@@ -667,11 +667,23 @@ async def run_chat_query(session_id: str, message: str, stadium_id: str, languag
                     "Please check your network and configuration keys."
                 )
 
-    history_manager.add_message(session_id, "user", message)
-    history_manager.add_message(session_id, "model", reply_text)
-
     # Step 6: Parse bracket agent tag and return
     parsed_agent, clean_reply = parse_agent_response(reply_text, agent_used)
+    
+    # Programmatic grounding checks for simulated fallbacks
+    if clean_reply and "⚠️" not in clean_reply:
+        if live_weather and live_weather.get("is_simulated") and should_fetch_weather(message):
+            disclaimer = "simulated demo weather"
+            if disclaimer.lower() not in clean_reply.lower() and "simulated/demo" not in clean_reply.lower():
+                clean_reply += "\n\n*(Note: Using simulated demo weather forecast data because the live API connection is currently unavailable.)*"
+
+        if live_football and not live_football.get("is_live_api") and should_fetch_football(message):
+            disclaimer = "simulated demo match"
+            if disclaimer.lower() not in clean_reply.lower() and "simulated/demo" not in clean_reply.lower():
+                clean_reply += "\n\n*(Note: Using simulated demo match schedule and standings data because the live API connection is currently unavailable.)*"
+
+    history_manager.add_message(session_id, "user", message)
+    history_manager.add_message(session_id, "model", f"[{parsed_agent}] {clean_reply}")
     
     # Store in normalized cache
     cache_manager.set(stadium_id, language, message, (clean_reply, parsed_agent))
