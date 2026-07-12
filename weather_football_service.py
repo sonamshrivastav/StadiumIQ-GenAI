@@ -163,7 +163,8 @@ def get_weather_data(stadium_id: str) -> dict:
                 "wind_speed": f"{curr_wind} km/h",
                 "precipitation_mm": f"{curr_precip} mm",
                 "rain_probability": f"{rain_prob}%",
-                "forecast": forecast
+                "forecast": forecast,
+                "is_simulated": False
             }
             
             # Cache it
@@ -186,7 +187,8 @@ def get_weather_data(stadium_id: str) -> dict:
                 {"date": "Today", "condition": "Partly cloudy", "temp_max": 24, "temp_min": 17, "rain_probability_max": 15},
                 {"date": "Tomorrow", "condition": "Clear sky", "temp_max": 26, "temp_min": 18, "rain_probability_max": 5},
                 {"date": "Day After", "condition": "Overcast", "temp_max": 22, "temp_min": 16, "rain_probability_max": 40}
-            ]
+            ],
+            "is_simulated": True
         }
         return simulated_weather
 
@@ -218,6 +220,7 @@ def get_structured_football_context(stadium_id: str = None) -> dict:
     # 1. Fetch Today's fixtures from API-Football
     today_str = datetime.now().strftime("%Y-%m-%d")
     api_fixtures = []
+    api_success = False
     
     url = f"https://v3.football.api-sports.io/fixtures?date={today_str}"
     ctx = ssl.create_default_context()
@@ -229,6 +232,8 @@ def get_structured_football_context(stadium_id: str = None) -> dict:
         with urllib.request.urlopen(req, timeout=8, context=ctx) as response:
             res_data = json.loads(response.read().decode("utf-8"))
             api_fixtures = res_data.get("response", [])
+            if len(api_fixtures) > 0 and not res_data.get("errors"):
+                api_success = True
     except Exception as e:
         print(f"[FootballService] Failed to load today's API-Football matches: {e}")
 
@@ -491,7 +496,8 @@ def get_structured_football_context(stadium_id: str = None) -> dict:
         "upcoming_matches": upcoming_matches,
         "group_standings": sorted_standings,
         "stadium_today_fixtures": stadium_today_fixtures,
-        "data_source": "Merged API-Football & Simulation Structure"
+        "data_source": "Merged API-Football & Simulation Structure",
+        "is_live_api": api_success
     }
 
     # Cache the result
@@ -505,8 +511,12 @@ def format_weather_context(ctx: dict) -> str:
     """Formats weather JSON context into a clean, token-efficient text summary."""
     if not ctx or not isinstance(ctx, dict) or "error" in ctx:
         return ""
+    
+    source_status = "[SIMULATED / DEMO DATA - Live API weather unavailable]" if ctx.get("is_simulated") else "[VERIFIED LIVE DATA - Open-Meteo]"
+    
     lines = [
-        f"Weather for {ctx['stadium_name']}:",
+        f"Weather Context {source_status}:",
+        f"  Stadium: {ctx['stadium_name']}",
         f"  Current Condition: {ctx['condition']}",
         f"  Temperature: {ctx['temperature']}",
         f"  Humidity: {ctx['humidity']}",
@@ -525,7 +535,10 @@ def format_football_context(ctx: dict, stadium_id: str = None) -> str:
     if not ctx or not isinstance(ctx, dict):
         return ""
         
+    source_status = "[VERIFIED LIVE DATA - API-Football]" if ctx.get("is_live_api") else "[SIMULATED / DEMO DATA - Live API match info unavailable or showing local seed fixtures]"
+    
     lines = []
+    lines.append(f"Tournament Context {source_status}:")
     lines.append(f"Tournament Name: {ctx.get('tournament_name', 'FIFA World Cup 2026')}")
     lines.append(f"Competition: {ctx.get('competition', 'FIFA World Cup 2026')}")
     lines.append(f"Current Tournament Stage: {ctx.get('current_tournament_stage', 'Group Stage')}")
