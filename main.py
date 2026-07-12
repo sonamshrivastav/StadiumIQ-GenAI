@@ -57,6 +57,15 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=()"
         response.headers["Cache-Control"] = "no-store"
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self' https://stadiumiq-genai.onrender.com; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+            "font-src 'self' https://fonts.gstatic.com; "
+            "img-src 'self' data: https://*.tile.openstreetmap.org https://unpkg.com; "
+            "connect-src 'self' https://stadiumiq-genai.onrender.com wss://stadiumiq-genai.onrender.com https://open-meteo.com https://api-football.com; "
+            "frame-ancestors 'none';"
+        )
         return response
 
 

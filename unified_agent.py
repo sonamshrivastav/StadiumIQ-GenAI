@@ -532,9 +532,8 @@ async def run_chat_query(session_id: str, message: str, stadium_id: str, languag
         f"User message: {message}"
     )
 
-    # Incorporate context prefix for primary provider (Gemini)
-    context_prefix = f"[Current stadium context: {stadium_name} (stadium_id: {stadium_id}). User language: {language}] "
-    full_message = context_prefix + message
+    # Incorporate full context prompt for primary provider (Gemini)
+    full_message = context_prompt
     
     user_content = types.Content(
         role="user",
