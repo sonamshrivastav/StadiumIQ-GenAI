@@ -88,8 +88,8 @@ CRITICAL INSTRUCTIONS:
   - Answer questions about weather, standings, or matches ONLY from the supplied structured context (such as live weather temperature, humidity, match status, and standings).
   - NEVER invent or fabricate match schedules, scores, standings, weather metrics, player details, or operational logs.
   - Check the source headers in the weather and football context blocks:
-    - If the context header states `[SIMULATED / DEMO DATA - Live API weather unavailable]` or similar, you MUST clearly indicate in your response that simulated/demo data is being shown because live API connection is currently unavailable.
-    - If the context header states `[VERIFIED LIVE DATA]`, you should present it as verified live data.
+    - If the weather context header contains "[SIMULATED / DEMO DATA]", you MUST explicitly state that the weather data is simulated/demo data because the live API is unavailable.
+    - If the tournament context header contains "[SIMULATED / DEMO DATA]", you MUST explicitly state that the match schedule/standings shown are simulated/demo data because the live API connection is currently unavailable.
   - If the requested information is not present in the provided context (e.g., player lineups, yellow/red card statistics not listed, or groups not in the standings), you MUST explicitly state that you do not have verified information rather than guessing or fabricating details.
 - Keep responses relatively concise and focused on action.
 """
