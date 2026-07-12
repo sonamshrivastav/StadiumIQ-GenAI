@@ -325,12 +325,12 @@ export default function DetailView({ activeView, stadiumId, currentStadium, faci
               ) : (
                 <form onSubmit={handleCompanionRequest} className="detail-form">
                   <div className="form-group">
-                    <label>Meeting Location / Gate</label>
-                    <input type="text" placeholder="e.g. Gate A, Section 112" value={meetPoint} onChange={e => setMeetPoint(e.target.value)} required />
+                    <label htmlFor="companion-meet-point">Meeting Location / Gate</label>
+                    <input id="companion-meet-point" type="text" placeholder="e.g. Gate A, Section 112" value={meetPoint} onChange={e => setMeetPoint(e.target.value)} required />
                   </div>
                   <div className="form-group">
-                    <label>Assistance Type</label>
-                    <select value={assistType} onChange={e => setAssistType(e.target.value)}>
+                    <label htmlFor="companion-assist-type">Assistance Type</label>
+                    <select id="companion-assist-type" value={assistType} onChange={e => setAssistType(e.target.value)} aria-label="Select Assistance Type">
                       <option value="wheelchair">Wheelchair Navigation Support</option>
                       <option value="visually-impaired">Visually Impaired Companion</option>
                       <option value="translation">Language Translation</option>
@@ -350,7 +350,8 @@ export default function DetailView({ activeView, stadiumId, currentStadium, faci
               <p className="card-subtext">Get ramp & elevator-friendly directions to your section.</p>
               
               <form onSubmit={handleAccessRoute} className="form-row">
-                <input type="text" placeholder="Enter seat section (e.g. 110)" value={accessSection} onChange={e => setAccessSection(e.target.value)} required />
+                <label htmlFor="route-section-input" className="sr-only" style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', border: 0 }}>Enter seat section</label>
+                <input id="route-section-input" type="text" placeholder="Enter seat section (e.g. 110)" value={accessSection} onChange={e => setAccessSection(e.target.value)} aria-label="Seat Section" required />
                 <button type="submit" className="submit-btn inline-btn" disabled={accessLoading}>Find Route</button>
               </form>
 
@@ -415,12 +416,12 @@ export default function DetailView({ activeView, stadiumId, currentStadium, faci
               
               <form onSubmit={handleTravelEstimate} className="detail-form">
                 <div className="form-group">
-                  <label>Origin Address / Hotel / Station</label>
-                  <input type="text" placeholder="e.g. Times Square, NY" value={origin} onChange={e => setOrigin(e.target.value)} required />
+                  <label htmlFor="transit-origin">Origin Address / Hotel / Station</label>
+                  <input id="transit-origin" type="text" placeholder="e.g. Times Square, NY" value={origin} onChange={e => setOrigin(e.target.value)} required />
                 </div>
                 <div className="form-group">
-                  <label>Mode of Travel</label>
-                  <select value={transitMode} onChange={e => setTransitMode(e.target.value)}>
+                  <label htmlFor="transit-mode">Mode of Travel</label>
+                  <select id="transit-mode" value={transitMode} onChange={e => setTransitMode(e.target.value)} aria-label="Select Mode of Travel">
                     <option value="transit">Public Transit</option>
                     <option value="shuttle">Free FIFA Shuttle</option>
                     <option value="rideshare">Uber / Rideshare</option>
@@ -499,8 +500,8 @@ export default function DetailView({ activeView, stadiumId, currentStadium, faci
               
               <form className="detail-form">
                 <div className="form-group">
-                  <label>Mode of Travel</label>
-                  <select value={carbonMode} onChange={e => setCarbonMode(e.target.value)}>
+                  <label htmlFor="sustainability-carbon-mode">Mode of Travel</label>
+                  <select id="sustainability-carbon-mode" value={carbonMode} onChange={e => setCarbonMode(e.target.value)} aria-label="Select Mode of Travel for Carbon Footprint">
                     <option value="train">Train / Subway 🚇</option>
                     <option value="bus">Public Bus 🚌</option>
                     <option value="shuttle">FIFA Shuttle 🚍</option>
@@ -511,8 +512,8 @@ export default function DetailView({ activeView, stadiumId, currentStadium, faci
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>Travel Distance: {carbonDist} km</label>
-                  <input type="range" min="1" max="100" value={carbonDist} onChange={e => setCarbonDist(parseInt(e.target.value))} />
+                  <label htmlFor="sustainability-carbon-dist">Travel Distance: {carbonDist} km</label>
+                  <input id="sustainability-carbon-dist" type="range" min="1" max="100" value={carbonDist} onChange={e => setCarbonDist(parseInt(e.target.value))} aria-label="Travel distance in kilometers" />
                 </div>
               </form>
 
@@ -622,12 +623,12 @@ export default function DetailView({ activeView, stadiumId, currentStadium, faci
               ) : (
                 <form onSubmit={handleAssignTask} className="detail-form">
                   <div className="form-group">
-                    <label>Task / Instruction Description</label>
-                    <input type="text" placeholder="e.g. Inspect restroom Section 104 for water spill" value={taskDesc} onChange={e => setTaskDesc(e.target.value)} required />
+                    <label htmlFor="ops-task-desc">Task / Instruction Description</label>
+                    <input id="ops-task-desc" type="text" placeholder="e.g. Inspect restroom Section 104 for water spill" value={taskDesc} onChange={e => setTaskDesc(e.target.value)} required />
                   </div>
                   <div className="form-group">
-                    <label>Priority Level</label>
-                    <select value={taskPriority} onChange={e => setTaskPriority(e.target.value)}>
+                    <label htmlFor="ops-task-priority">Priority Level</label>
+                    <select id="ops-task-priority" value={taskPriority} onChange={e => setTaskPriority(e.target.value)} aria-label="Select Task Priority Level">
                       <option value="low">Low</option>
                       <option value="medium">Medium</option>
                       <option value="high">High (Immediate deployment)</option>
@@ -655,12 +656,12 @@ export default function DetailView({ activeView, stadiumId, currentStadium, faci
               <p className="card-subtext">Report spills, facility breakages, or medical incidents.</p>
               <form onSubmit={handleReportIncident} className="detail-form">
                 <div className="form-group">
-                  <label>Incident Location</label>
-                  <input type="text" placeholder="e.g. Upper Deck Section 312" value={incLocation} onChange={e => setIncLocation(e.target.value)} required />
+                  <label htmlFor="ops-incident-location">Incident Location</label>
+                  <input id="ops-incident-location" type="text" placeholder="e.g. Upper Deck Section 312" value={incLocation} onChange={e => setIncLocation(e.target.value)} required />
                 </div>
                 <div className="form-group">
-                  <label>Incident Description</label>
-                  <input type="text" placeholder="e.g. Blocked gate exit causing crowd pool" value={incDesc} onChange={e => setIncDesc(e.target.value)} required />
+                  <label htmlFor="ops-incident-desc">Incident Description</label>
+                  <input id="ops-incident-desc" type="text" placeholder="e.g. Blocked gate exit causing crowd pool" value={incDesc} onChange={e => setIncDesc(e.target.value)} required />
                 </div>
                 <button type="submit" className="submit-btn" disabled={incReporting}>
                   {incReporting ? 'Logging...' : 'Report Incident'}
